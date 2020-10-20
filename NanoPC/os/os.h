@@ -2,7 +2,7 @@
 // *****                                                                   *****
 // ***** ARDUINO NANO PC System with 40x25 Character VGA and PS/2 Keyboard *****
 // *****                                                                   *****
-// *****        Written by Carsten Herting 18.09.2020 Version 2.5          *****
+// *****         Written by Carsten Herting 8.10.2020 Version 2.6          *****
 // *****                                                                   *****
 // *****************************************************************************
 
@@ -29,7 +29,9 @@
 
 namespace os
 {  
-  #define SIZE  8									// keyboard input buffer size
+  #define ROWS	25
+	#define COLS	40
+	#define SIZE  8									// keyboard input buffer size
   volatile byte reg[SIZE];        // ring buffer of register data
   volatile byte regout = 0;       // index of current output position in queue
   volatile byte regin = 0;        // index of current input position in queue
@@ -38,7 +40,7 @@ namespace os
   volatile int vline = 0;         // current vertical position of pixel video output
   volatile byte vram[25][40];     // array of video ram data
   
-  const byte charset[8][96] = {   // charset line data starting with character 32 (SPACE)
+  volatile byte charset[8][96] = {   // charset line data starting with character 32 (SPACE)
     0x00,0x18,0x66,0x66,0x18,0x62,0x3C,0x06,0x0C,0x30,0x00,0x00,0x00,0x00,0x00,0x00,0x3C,0x18,0x3C,0x3C,0x06,0x7E,0x3C,0x7E,0x3C,0x3C,0x00,0x00,0x0E,0x00,0x70,0x3C,0x3C,0x18,0x7C,0x3C,0x78,0x7E,0x7E,0x3C,0x66,0x3C,0x1E,0x66,0x60,0x63,0x66,0x3C,0x7C,0x3C,0x7C,0x3C,0x7E,0x66,0x66,0x63,0x66,0x66,0x7E,0x3C,0x00,0x3C,0x00,0x00,0x3C,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0E,0x18,0x70,0x00,0xFF,
     0x00,0x18,0x66,0x66,0x3E,0x66,0x66,0x0C,0x18,0x18,0x66,0x18,0x00,0x00,0x00,0x03,0x66,0x18,0x66,0x66,0x0E,0x60,0x66,0x66,0x66,0x66,0x00,0x00,0x18,0x00,0x18,0x66,0x66,0x3C,0x66,0x66,0x6C,0x60,0x60,0x66,0x66,0x18,0x0C,0x6C,0x60,0x77,0x76,0x66,0x66,0x66,0x66,0x66,0x18,0x66,0x66,0x63,0x66,0x66,0x06,0x30,0x60,0x0C,0x18,0x00,0x66,0x00,0x60,0x00,0x06,0x00,0x0E,0x00,0x60,0x18,0x06,0x60,0x38,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x18,0x00,0x00,0x00,0x00,0x00,0x00,0x18,0x18,0x18,0x00,0xFF,
     0x00,0x18,0x66,0xFF,0x60,0x0C,0x3C,0x18,0x30,0x0C,0x3C,0x18,0x00,0x00,0x00,0x06,0x6E,0x38,0x06,0x06,0x1E,0x7C,0x60,0x0C,0x66,0x66,0x18,0x18,0x30,0x7E,0x0C,0x06,0x6E,0x66,0x66,0x60,0x66,0x60,0x60,0x60,0x66,0x18,0x0C,0x78,0x60,0x7F,0x7E,0x66,0x66,0x66,0x66,0x60,0x18,0x66,0x66,0x63,0x3C,0x66,0x0C,0x30,0x30,0x0C,0x3C,0x00,0x6E,0x3C,0x60,0x3C,0x06,0x3C,0x18,0x3E,0x60,0x00,0x00,0x60,0x18,0x66,0x7C,0x3C,0x7C,0x3E,0x7C,0x3E,0x7E,0x66,0x66,0x63,0x66,0x66,0x7E,0x18,0x18,0x18,0x00,0xFF,
@@ -62,52 +64,7 @@ namespace os
       0,0,0,0,0,0,0,0,         0,0,0,0,0,0,0,0,          0,0,0,0,0,0,0,0,          0,0,0,0,0,123,91,0,
       0,0,0,0,0,125,93,0,      0,0,0,0,0,0,92,0,         0,0,0,0,0,0,0,0,          0,0,0,126,0,0,0,0,
       0,124,0,0,0,0,0,0,       0,0,0,0,0,0,0,0,          0,0,0,0,0,0,0,0,          0,0,0,0,0,0,0,0  } };
-  
-  void init()
-  {
-    noInterrupts();               // disable interrupts before messing around with timer registers
-
-    DDRC  = 0b00000000;
-		PORTC = 0b00000000;
-		DDRD  = 0b11111111;
-    PORTD = 0b00000000;  
-    DDRB  = 0b00011111;           // pin8: CLKO, pin 9: 74173 /OE, pin 10: VSYNC (timer1), pin 11: 74165 PE (timer2), pin 12: HSync "by hand" inside ISR, pin 13: 74173 MR
-    PORTB = 0b00010000;           // HSYNC=1, /MR=0
-
-    GTCCR = 0b10000011;           // set TSM, PSRSYNC und PSRASY to correlate all 3 timers
-  
-    // *****************************
-    // ***** Timer0: VGA HSYNC *****
-    // *****************************
-    TCNT0  = 6;										// align VSYNC and HSYNC pulses
-    TCCR0A = (1<<WGM01) | (0<<WGM00);       // mode 2: Clear Timer on Compare Match (CTC)
-    TCCR0B = (0<<WGM02) | (0<<CS02) | (1<<CS01) | (0<<CS00); // x8 prescaler -> 0.5µs
-    OCR0A  = 63;                  // compare match register A (TOP) -> 32µs
-    TIMSK0 = (1<<OCIE0A);         // Output Compare Match A Interrupt Enable (not working: TOIE1 with ISR TIMER0_TOIE1_vect because it is already defined by timing functions)
     
-    // *****************************
-    // ***** Timer1: VGA VSYNC *****
-    // *****************************
-    TCNT1  = 0;
-    TCCR1A = (1<<COM1B1) | (1<<COM1B0) | (1<<WGM11) | (1<<WGM10);         // mode 15 (Fast PWM), set OC1B on Compare Match, clear OC1B at BOTTOM, controlling OC1B pin 10
-    TCCR1B = (1<<WGM13) | (1<<WGM12) | (1<<CS12) | (0<<CS11) | (1<<CS10); // x1024 prescaler -> 64µs
-    OCR1A  = 259;                 // compare match register A (TOP) -> 16.64ms
-    OCR1B  = 0;                   // compare match register B -> 64µs
-    TIMSK1 = (1<<TOIE1);          // enable timer overflow interrupt setting vlines = 0
-  
-    // *************************************************
-    // ***** Timer2: 74165 Parallel Load Enable PE *****
-    // *************************************************
-    TCNT2  = 0;
-    TCCR2A = (1<<COM2A1) | (1<<COM2A0) | (1<<WGM21) | (1<<WGM20); // mode 7: Fast PWM, COM2A0=0: normal port HIGH, COM2A0=1: Toggle OC2A pin 11 on Compare Match
-    TCCR2B = (1<<WGM22) | (0<<CS22) | (0<<CS21) | (1<<CS20) ;     // set x0 prescaler -> 62.5ns;
-    OCR2A  = 7;                   // compare match register A (TOP) -> 250ns
-    TIMSK2 = 0;                   // no interrupts here
-  
-    GTCCR = 0;                    // clear TSM => all timers start synchronously
-    interrupts();
-  }
-  
   ISR(TIMER1_OVF_vect)            // timer1 overflow interrupt resets vline at HSYNC
   {
     vline = 0;
@@ -129,9 +86,9 @@ namespace os
 
     DDRD  = 0b00000000;           													// D = input
     PORTB = 0b00000010;           													// /HSYNC=0, /MR=1
-    byte lin = ((vline++) >> 1) - 18;       								// skip 2 lines (VSYNC pulse) + 33 lines (vertical back porch)
+    byte lin = ((vline++) >> 1) - 30;       								// skip 2 lines (VSYNC pulse) + some lines (vertical back porch)
 		volatile byte* vrow = vram[lin >> 3];  									// pointer to the vram row 0...24 to display
-    const byte* cset = charset[lin & 0b111] - 32; 					// pointer to the charset line 0..7 to use starting @ character 32
+    volatile byte* cset = charset[lin & 0b111] - 32; 					// pointer to the charset line 0..7 to use starting @ character 32
     byte scan = (PINC & 0b00111111) | (PIND & 0b11000000);	// read only after output has stabilized
     PORTB = 0b00010010;           													// /HSYNC=1, /MR=1
     DDRD  = 0b11111111;           													// D = output
@@ -247,6 +204,59 @@ namespace os
   {    
     volatile byte* p = &vram[y][x];
     for (int i=0; i<s.length(); i++) p[i] = s[i];
+  }
+
+	void wait(int dt)
+	{
+	  int t = os::frames;
+		while(os::frames != t + dt);
+	}
+
+  void init()
+  {
+    noInterrupts();               // disable interrupts before messing around with timer registers
+
+    DDRC  = 0b00000000;
+		PORTC = 0b00000000;
+		DDRD  = 0b11111111;
+    PORTD = 0b00000000;  
+    DDRB  = 0b00011111;           // pin8: CLKO, pin 9: 74173 /OE, pin 10: VSYNC (timer1), pin 11: 74165 PE (timer2), pin 12: HSync "by hand" inside ISR, pin 13: 74173 MR
+    PORTB = 0b00010000;           // HSYNC=1, /MR=0
+
+    GTCCR = 0b10000011;           // set TSM, PSRSYNC und PSRASY to correlate all 3 timers
+  
+    // *****************************
+    // ***** Timer0: VGA HSYNC *****
+    // *****************************
+    TCNT0  = 6;										// align VSYNC and HSYNC pulses
+    TCCR0A = (1<<WGM01) | (0<<WGM00);       // mode 2: Clear Timer on Compare Match (CTC)
+    TCCR0B = (0<<WGM02) | (0<<CS02) | (1<<CS01) | (0<<CS00); // x8 prescaler -> 0.5µs
+    OCR0A  = 63;                  // compare match register A (TOP) -> 32µs
+    TIMSK0 = (1<<OCIE0A);         // Output Compare Match A Interrupt Enable (not working: TOIE1 with ISR TIMER0_TOIE1_vect because it is already defined by timing functions)
+    
+    // *****************************
+    // ***** Timer1: VGA VSYNC *****
+    // *****************************
+    TCNT1  = 0;
+    TCCR1A = (1<<COM1B1) | (1<<COM1B0) | (1<<WGM11) | (1<<WGM10);         // mode 15 (Fast PWM), set OC1B on Compare Match, clear OC1B at BOTTOM, controlling OC1B pin 10
+    TCCR1B = (1<<WGM13) | (1<<WGM12) | (1<<CS12) | (0<<CS11) | (1<<CS10); // x1024 prescaler -> 64µs
+    OCR1A  = 259;                 // compare match register A (TOP) -> 16.64ms
+    OCR1B  = 0;                   // compare match register B -> 64µs
+    TIMSK1 = (1<<TOIE1);          // enable timer overflow interrupt setting vlines = 0
+  
+    // *************************************************
+    // ***** Timer2: 74165 Parallel Load Enable PE *****
+    // *************************************************
+    TCNT2  = 0;
+    TCCR2A = (1<<COM2A1) | (1<<COM2A0) | (1<<WGM21) | (1<<WGM20); // mode 7: Fast PWM, COM2A0=0: normal port HIGH, COM2A0=1: Toggle OC2A pin 11 on Compare Match
+    TCCR2B = (1<<WGM22) | (0<<CS22) | (0<<CS21) | (1<<CS20) ;     // set x0 prescaler -> 62.5ns;
+    OCR2A  = 7;                   // compare match register A (TOP) -> 250ns
+    TIMSK2 = 0;                   // no interrupts here
+  
+    GTCCR = 0;                    // clear TSM => all timers start synchronously
+    interrupts();
+
+		fill();												// clear video RAM
   }
 }
 
