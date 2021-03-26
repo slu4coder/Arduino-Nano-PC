@@ -4,5 +4,5 @@ void setup() {}
 
 void loop()
 {    
-  os::vram[random(25)][random(40)] = random(32, 128);
+  os::vram[random(25)][random(40)] = random(30, 256);
 }
