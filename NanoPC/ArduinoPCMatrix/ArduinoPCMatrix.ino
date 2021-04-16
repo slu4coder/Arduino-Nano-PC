@@ -1,6 +1,6 @@
 #include <os.h>   // copy the files 'os.h' and 'os.S' into the folder '.../Arduino/libraries/os'
 
-#define MAXLINES 70
+#define MAXLINES 50
 struct line { char x, y, h; };
 line lines[MAXLINES];
 
