@@ -149,19 +149,19 @@ namespace os
     OCR1B  = 0;                       // compare match register B -> 64µs
     TIMSK1 = (1 << TOIE1);            // enable timer overflow interrupt setting vlines = 0
   
-		// ************************************************
-		// ***** Timer2: only used for jitter control *****
-		// ************************************************
-		TCNT2  = 0;
-		TCCR2A = (0<<COM2A1) | (0<<COM2A0) | (1<<WGM21) | (1<<WGM20); // mode 7: Fast PWM, COM2A0=0: normal port HIGH, COM2A0=1: Toggle OC2A pin 11 on Compare Match
-		TCCR2B = (1<<WGM22) | (0<<CS22) | (0<<CS21) | (1<<CS20) ;     // set x0 prescaler -> 62.5ns;
-		OCR2A  = 7;                   // compare match register A (TOP) -> 250ns
-		TIMSK2 = 0;                   // no interrupts here
+	// ************************************************
+	// ***** Timer2: only used for jitter control *****
+	// ************************************************
+	TCNT2  = 0;
+	TCCR2A = (0<<COM2A1) | (0<<COM2A0) | (1<<WGM21) | (1<<WGM20); // mode 7: Fast PWM, COM2A0=0: normal port HIGH, COM2A0=1: Toggle OC2A pin 11 on Compare Match
+	TCCR2B = (1<<WGM22) | (0<<CS22) | (0<<CS21) | (1<<CS20) ;     // set x0 prescaler -> 62.5ns;
+	OCR2A  = 7;                   	  // compare match register A (TOP) -> 250ns
+	TIMSK2 = 0;                   	  // no interrupts here
   
     GTCCR = 0;                        // clear TSM => all timers start synchronously
     interrupts();
 
-		fill();												    // clear video RAM
+	fill();						  // clear video RAM
   }
 }
 
