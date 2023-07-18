@@ -1,8 +1,6 @@
 # Squeezing Blood from a Stone: The Arduino Nano Personal Computer
 
-I am pushing the limits of how much you can get out of a single Arduino Nano and as few as possible additional logic:
-
-Sketches and schematics of my minimalistic 'Arduino Nano Personal Computer':
+I am pushing the limits of how much you can get out of a single Arduino Nano and as few as possible additional logic. Sketches and schematics of my minimalistic 'Arduino Nano Personal Computer' featuring:
 
 o 320x200 pixels of VGA monochrome (optional: 16 colors) output
 
