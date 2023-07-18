@@ -1,6 +1,6 @@
 # Squeezing Blood from a Stone: The Arduino Nano "Personal Computer" with VGA and PS/2
 
-I am pushing the limits of how much you can get out of a single Arduino Nano and as few as possible additional logic. Sketches and schematics of my minimalistic 'Arduino Nano Personal Computer' featuring:
+I am pushing the limits of what you can get out of a single Arduino Nano and a few logic chips. Here are the sketches and schematics of my minimalistic 'Arduino Nano Personal Computer' featuring:
 
 o 320x200 pixels of VGA monochrome (16 colors) output
 
