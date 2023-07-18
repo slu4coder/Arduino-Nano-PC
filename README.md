@@ -18,7 +18,7 @@ The following global variables and functions are provided by the library 'os' (u
 
 	byte os::cram[25]                               row color RAM array, available colors are:
 
-																												WHITE, BLACK, GRAY, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN,
+       							WHITE, BLACK, GRAY, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN,
 			    
 							DKGRAY, DKRED, DKGREEN, DKYELLOW, DKBLUE, DKMAGENTA, DKCYAN.
 		
