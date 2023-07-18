@@ -19,6 +19,7 @@ The following global variables and functions are provided by the library 'os' (u
 	byte os::cram[25]                               row color RAM array, available colors are:
 
 																												WHITE, BLACK, GRAY, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN,
+			    
 							DKGRAY, DKRED, DKGREEN, DKYELLOW, DKBLUE, DKMAGENTA, DKCYAN.
 		
 	os::text(String s, byte x, byte y, byte col=0)  prints text at screen position (x, y) [optional: sets row color]
