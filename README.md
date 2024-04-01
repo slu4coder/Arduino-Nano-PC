@@ -8,7 +8,7 @@ I am pushing the limits of how much compute you can get out of an Arduino Nano:
 
         o requires only 1(!) logic IC 74HC166
 
-# HOW TO USE THE 'NANO HOME COMPUTER 2.0'
+# HOW TO USE THE 'NANO HOME COMPUTER 2'
 
 1. Set the Nano's fuses for output of the 16MHz system clock on pin D8 (see appendix A below).
 
