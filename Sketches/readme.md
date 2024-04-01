@@ -1,3 +1,3 @@
 # 'Nano Personal Computer' Sketches
 
-These sketches run on all hardware revisions without changes.
+These sketches run on all hardware revisions.
