@@ -19,9 +19,9 @@ output and PS/2 interface on a single Arduino Nano with just 1 (2) logic IC.
   
         byte os::cram[25]                                 row color RAM array, available colors are:
   
-                                                      WHITE, BLACK, GRAY, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN,
+                                                              WHITE, BLACK, GRAY, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN,
                                                     
-                                                      DKGRAY, DKRED, DKGREEN, DKYELLOW, DKBLUE, DKMAGENTA, DKCYAN.
+                                                              DKGRAY, DKRED, DKGREEN, DKYELLOW, DKBLUE, DKMAGENTA, DKCYAN.
                                                     
         os::text(String s, byte x, byte y, byte col = 0)  prints text at screen position (x, y), col = 0: don't set row color
   
