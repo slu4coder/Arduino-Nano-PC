@@ -23,15 +23,15 @@ output and PS/2 interface on a single Arduino Nano with just 1 (2) logic IC.
                                                     
                                                               DKGRAY, DKRED, DKGREEN, DKYELLOW, DKBLUE, DKMAGENTA, DKCYAN.
                                                     
-        os::text(String s, byte x, byte y, byte col = 0)        prints text at screen position (x, y), col = 0: don't set row color
+        os::text(String s, byte x, byte y, byte col = 0)      prints text at screen position (x, y), col = 0: don't set row color
   
-        os::fill(char c = 32)                                fills the video RAM with character c
+        os::fill(char c = 32)                                 fills the video RAM with character c
   
-        os::scroll()                                        scrolls the video RAM one step upwards
+        os::scroll()                                          scrolls the video RAM one step upwards
   
-        os::wait(int n)                                        waits for n frames
+        os::wait(int n)                                       waits for n frames
   
-        byte os::getkey()                                        returns keystroke ASCII code (none: 0)
+        byte os::getkey()                                     returns keystroke ASCII code (none: 0)
   
 4. 26KB FLASH (1KB SRAM) of the Nano's 30KB FLASH (2KB SRAM) are usable, respectively.
    To save SRAM, define constant variables in FLASH memory by adding PROGMEM to the data type.
