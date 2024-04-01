@@ -78,5 +78,3 @@ B. Hardware
   Pin D12 (B4):    /HSYNC VGA (inside ISR, every 32µs)
   
   Pin D13 (B5):    LED
-
-Have fun!
